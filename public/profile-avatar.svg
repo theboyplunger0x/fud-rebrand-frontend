@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title description">
+  <title id="title">degen.base.eth profile picture</title>
+  <desc id="description">A geometric blue character on a dark background.</desc>
+  <rect width="160" height="160" rx="80" fill="#111114"/>
+  <circle cx="80" cy="80" r="61" fill="#3138ff"/>
+  <path d="M40 73c5-28 21-43 40-43s35 15 40 43v35c-12 14-25 22-40 22s-28-8-40-22V73Z" fill="#f4f2ed"/>
+  <path d="M40 74c8-29 23-44 46-44 18 0 30 10 36 30-17-2-32-8-45-19-7 16-19 27-37 33Z" fill="#111114"/>
+  <circle cx="62" cy="78" r="6" fill="#111114"/>
+  <circle cx="99" cy="78" r="6" fill="#111114"/>
+  <path d="M63 103c10 9 24 9 34 0" fill="none" stroke="#111114" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="127" cy="127" r="19" fill="#111114" stroke="#f4f2ed" stroke-width="4"/>
+  <text x="127" y="134" fill="#f4f2ed" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">F.</text>
+</svg>
