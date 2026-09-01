@@ -12,4 +12,15 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      proxy: {
+        "/api-backend": {
+          target: "https://fud-backend-mainnet-copy-production.up.railway.app",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api-backend/, ""),
+        },
+      },
+    },
+  },
 });

@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+
+import { backendAvatarUrl } from "@/lib/api";
 import { getPublicProfile, profileInitials } from "@/lib/profiles";
 
 const avatarColors = ["#3138ff", "#e34f90", "#0d9488", "#ca8a04", "#7c3aed", "#ea580c"];
@@ -9,20 +12,29 @@ function avatarColor(username: string) {
 
 export function ProfileAvatar({
   username,
+  avatarUrl,
   size = 36,
   className = "",
 }: {
   username: string;
+  avatarUrl?: string | null;
   size?: number;
   className?: string;
 }) {
   const profile = getPublicProfile(username);
+  const source = avatarUrl || profile?.avatar || backendAvatarUrl(username);
+  const [failedSource, setFailedSource] = useState<string | null>(null);
 
-  if (profile?.avatar) {
+  useEffect(() => {
+    setFailedSource(null);
+  }, [source]);
+
+  if (source && failedSource !== source) {
     return (
       <img
-        src={profile.avatar}
-        alt={`${profile.displayName} profile`}
+        src={source}
+        alt={`${profile?.displayName ?? username} profile`}
+        onError={() => setFailedSource(source)}
         className={`shrink-0 rounded-full object-cover ${className}`}
         style={{ width: size, height: size }}
       />

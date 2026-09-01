@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Toaster } from "../components/ui/sonner";
 import { ThemeProvider } from "../hooks/use-theme";
+import { AuthProvider } from "../lib/auth";
 import { WalletProviderRoot } from "../lib/wallet";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -147,11 +148,13 @@ function RootComponent() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <WalletProviderRoot>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-          <Toaster position="top-center" />
-        </WalletProviderRoot>
+        <AuthProvider>
+          <WalletProviderRoot>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+            <Toaster position="top-center" />
+          </WalletProviderRoot>
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

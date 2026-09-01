@@ -1,9 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Moon, Plus, Sun, UserRound } from "lucide-react";
+import { Copy, Home, LogOut, Moon, Plus, Sun, UserRound } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { ConnectWalletDialog, WalletAccountDialog } from "@/components/connect-wallet";
+import { toast } from "sonner";
+
+import { ProfileAvatar } from "@/components/profile-avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useTheme } from "@/hooks/use-theme";
-import { useWallet } from "@/lib/wallet";
+import { useAuth } from "@/lib/auth";
 
 export function BrandMark() {
   return (
@@ -21,35 +30,87 @@ export function BrandMark() {
 }
 
 export function ConnectButton() {
-  const { connected, address, fud } = useWallet();
-  const [connectOpen, setConnectOpen] = useState(false);
+  const { user, loading, login, logout } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
+  const address = user?.wallet_address ?? "Wallet provisioning";
+  const balance = Number(user?.balance_usd ?? 0);
 
   return (
     <>
-      {connected ? (
+      {user ? (
         <div className="flex items-center gap-2">
           <div className="num rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground">
-            {fud.toLocaleString("en-US")} FUD
+            ${Number.isFinite(balance) ? balance.toFixed(2) : "0.00"}
           </div>
           <button
+            type="button"
             onClick={() => setAccountOpen(true)}
             className="num flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold"
           >
-            <span className="size-2 rounded-full bg-up" />
-            {address.length > 14 ? `${address.slice(0, 12)}…` : address}
+            <ProfileAvatar username={user.username} avatarUrl={user.avatar_url} size={20} />
+            <span className="max-w-28 truncate">{user.username}</span>
           </button>
         </div>
       ) : (
         <button
-          onClick={() => setConnectOpen(true)}
+          type="button"
+          disabled={loading}
+          onClick={login}
           className="fud-glass-primary rounded-full px-4 py-2 text-xs font-semibold active:opacity-80"
         >
-          Deposit
+          {loading ? "Loading…" : "Deposit"}
         </button>
       )}
-      <ConnectWalletDialog open={connectOpen} onOpenChange={setConnectOpen} />
-      <WalletAccountDialog open={accountOpen} onOpenChange={setAccountOpen} />
+      <Dialog open={accountOpen} onOpenChange={setAccountOpen}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-xl">Your FUD account</DialogTitle>
+            <DialogDescription>Identity and balance shared with FUD V2.</DialogDescription>
+          </DialogHeader>
+
+          <Link
+            to="/portfolio"
+            onClick={() => setAccountOpen(false)}
+            className="flex items-center gap-3 rounded-xl border border-border p-3"
+          >
+            <ProfileAvatar
+              username={user?.username ?? "fud"}
+              avatarUrl={user?.avatar_url}
+              size={42}
+            />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold">{user?.username}</span>
+              <span className="block text-xs text-muted-foreground">Edit profile</span>
+            </span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={async () => {
+              if (!user?.wallet_address) return;
+              await navigator.clipboard.writeText(user.wallet_address);
+              toast.success("Address copied");
+            }}
+            className="flex w-full items-center gap-2 rounded-xl border border-border p-3 text-left"
+          >
+            <span className="num min-w-0 flex-1 truncate text-sm font-semibold">{address}</span>
+            <Copy className="size-4 text-muted-foreground" />
+          </button>
+
+          <button
+            type="button"
+            onClick={async () => {
+              await logout();
+              setAccountOpen(false);
+              toast("Signed out");
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-border py-3 text-sm font-semibold"
+          >
+            <LogOut className="size-4" />
+            Sign out
+          </button>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
